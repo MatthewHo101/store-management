@@ -30,7 +30,8 @@ try {
       break;
     case 'trace': {
       const id = process.argv[3];
-      if (!id || !/^[0-9a-f-]{36}$/i.test(id)) throw new Error('usage: ember trace <lot UUID>');
+      if (!id || !/^[0-9a-f-]{36}$/i.test(id))
+        throw new Error('usage: npm run cli -- trace <lot UUID>');
       console.log(JSON.stringify(await db.transaction((tx) => traceLot(tx, id)), null, 2));
       break;
     }

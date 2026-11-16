@@ -19,7 +19,7 @@ after(async () => {
 test('HTTP health includes business and currency', async () => {
   const response = await app.inject({ method: 'GET', url: '/health' });
   assert.equal(response.statusCode, 200);
-  assert.equal(response.json().businessName, 'Ember Coffee');
+  assert.equal(response.json().businessName, 'coffee-management');
   assert.equal(response.json().currency, 'USD');
 });
 

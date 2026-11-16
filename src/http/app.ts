@@ -10,7 +10,7 @@ import { productionRoutes } from './routes/production.js';
 
 export function buildApp(
   db: Database,
-  settings = { businessName: 'Ember Coffee', currency: 'USD' },
+  settings = { businessName: 'coffee-management', currency: 'USD' },
   logging = false,
 ) {
   const app = Fastify({ logger: logging, bodyLimit: 1_048_576 });

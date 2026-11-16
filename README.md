@@ -1,4 +1,4 @@
-# Ember Coffee Operations
+# coffee-management
 
 A TypeScript backend for a hypothetical coffee business: buy green beans, receive
 traceable lots, roast, blend, package, reserve orders and ship coffee to customers.
@@ -12,8 +12,8 @@ cancellation refunds and outbound event delivery are simulations.
 ## Run with Docker
 
 ```sh
-git clone https://github.com/MatthewHo101/store-management.git
-cd store-management
+git clone https://github.com/MatthewHo101/coffee-management.git
+cd coffee-management
 docker compose up --build -d
 docker compose exec api node dist/cli.js demo
 curl http://127.0.0.1:3000/health
@@ -39,6 +39,22 @@ The test database is created on the PostgreSQL volume's first initialization. Fo
 existing volume without it, run `docker compose exec db createdb -U ember ember_test`.
 If local ports are busy, set `DB_PORT=55432 API_PORT=3300` before running Compose.
 The checked-in credentials are for local development only.
+
+## Updating an existing installation
+
+If you already ran the original `ember-coffee` Docker project, update from your existing
+checkout with these commands. The named database volume is retained and reused:
+
+```sh
+docker compose -p ember-coffee down
+git remote set-url origin https://github.com/MatthewHo101/coffee-management.git
+git pull
+docker compose up --build -d
+```
+
+The Docker project is now `coffee-management`. The database volume and internal PostgreSQL
+identifiers retain their original names so existing data remains available. Your local
+checkout folder can keep its old name, or you can rename it to `coffee-management`.
 
 ## Run with Node.js
 

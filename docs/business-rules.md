@@ -1,4 +1,4 @@
-# Ember Coffee business rules
+# coffee-management business rules
 
 The baseline operates one coffee business. Supplier, customer, SKU and lot identifiers
 belong to that business. Multiple warehouses are supported; business accounts and user
