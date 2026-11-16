@@ -12,7 +12,7 @@ cancellation refunds and outbound event delivery are simulations.
 ## Run with Docker
 
 ```sh
-git clone https://github.com/MatthewHo101/coffee-management.git
+git clone https://github.com/MatthewHo101/store-management.git coffee-management
 cd coffee-management
 docker compose up --build -d
 docker compose exec api node dist/cli.js demo
@@ -47,7 +47,6 @@ checkout with these commands. The named database volume is retained and reused:
 
 ```sh
 docker compose -p ember-coffee down
-git remote set-url origin https://github.com/MatthewHo101/coffee-management.git
 git pull
 docker compose up --build -d
 ```
