@@ -1,9 +1,9 @@
 # coffee-management
 
-A TypeScript backend for a hypothetical coffee business: buy green beans, receive
+A TypeScript application for a hypothetical coffee business: buy green beans, receive
 traceable lots, roast, blend, package, reserve orders and ship coffee to customers.
 
-Built with **Node.js 22+, Fastify, PostgreSQL 17, Zod and strict TypeScript**.
+Built with **React, Vite, Node.js 22.12+, Fastify, PostgreSQL 17, Zod and strict TypeScript**.
 This is a working **single-business baseline**. Business accounts, authentication
 and memberships are intentionally left for a later migration. The API is a local
 development service; Docker binds published ports to loopback. Payment acceptance,
@@ -21,6 +21,10 @@ curl http://127.0.0.1:3000/reports/inventory
 curl http://127.0.0.1:3000/orders
 ```
 
+Open **http://localhost:3000/** for the web interface. It includes an overview dashboard,
+inventory and traceability, purchasing, production, orders, and the business directory.
+The browser uses `/api` endpoints on the same origin; the original API URLs still work.
+
 The demo performs a complete receipt → roast → package → order → payment → shipment
 journey and prints IDs plus the supplier-to-customer trace. Running it again does not
 create duplicate demo stock. `docker compose exec api node dist/cli.js report` prints
@@ -28,7 +32,7 @@ operational and financial summaries. `docker compose logs worker` shows simulate
 outbound events.
 
 ```sh
-# Typecheck, lint, format check, PostgreSQL integration tests and production build
+# Typecheck, lint, format check, API tests, React interaction tests and production build
 docker compose --profile tools run --rm test
 
 # Stop services; the database volume is retained
@@ -41,6 +45,17 @@ If local ports are busy, set `DB_PORT=55432 API_PORT=3300` before running Compos
 The checked-in credentials are for local development only.
 
 ## Updating an existing installation
+
+For an installation already using the `coffee-management` Docker project:
+
+```sh
+git pull
+docker compose up --build -d
+```
+
+Then open **http://localhost:3000/**. Rebuilding is required to include the frontend
+assets in the API image. Your existing database volume is reused. If the interface is
+empty, add your own records or run the demo command above, then click Refresh.
 
 If you already ran the original `ember-coffee` Docker project, update from your existing
 checkout with these commands. The named database volume is retained and reused:
@@ -67,12 +82,20 @@ set -a
 set +a
 npm run migrate
 npm run demo
+npm run build
 npm run dev
 ```
 
 Environment variables are read from the process; `.env` is not automatically loaded.
 In another terminal with the same environment, run `npm run worker` or run one cycle
 with `npm run cli -- jobs`.
+
+For frontend live reload, run `npm run dev:web` in another terminal and open the URL Vite
+prints (normally http://localhost:5173). Vite forwards `/api` requests to the API at
+http://127.0.0.1:3000. Set `API_PROXY_TARGET` if the API uses a different port. `npm start`
+serves the last built frontend and API together at port 3000.
+
+See [the frontend guide](docs/frontend.md) for the screens and source structure.
 
 ```sh
 npm run check
@@ -88,6 +111,7 @@ separate PostgreSQL connections inside individual tests.
 
 ## What is implemented
 
+- Responsive React interface with real API data, operation forms, filters, detail dialogs and request feedback.
 - Suppliers, customers, warehouses and product SKUs.
 - Purchase orders, landed costs, partial receipts and discrepancy balances.
 - Lot inventory, stock movements, quarantine, waste and expiry checks.
@@ -114,7 +138,7 @@ provides simple, cross-process serialization for one business, with limited thro
 All application writers must use the transaction boundary. A later scaling change should
 introduce more granular locking with corresponding concurrency tests.
 
-There is no frontend, live payment processor, shipping carrier integration, tax engine,
+There is no live payment processor, shipping carrier integration, tax engine,
 subscription billing or full accounting ledger. Returns track physical stock; their
 financial refund workflow is future work. List endpoints are unpaginated for the initial
 small deployment. The outbox delivers at least once; consumers must deduplicate event IDs.

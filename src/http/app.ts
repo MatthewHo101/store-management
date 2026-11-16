@@ -1,4 +1,5 @@
-import Fastify from 'fastify';
+import Fastify, { type FastifyInstance } from 'fastify';
+import { frontend } from './frontend.js';
 import { ZodError } from 'zod';
 import type { Database } from '../database.js';
 import { DomainError } from '../domain/errors.js';
@@ -12,6 +13,7 @@ export function buildApp(
   db: Database,
   settings = { businessName: 'coffee-management', currency: 'USD' },
   logging = false,
+  frontendRoot?: string,
 ) {
   const app = Fastify({ logger: logging, bodyLimit: 1_048_576 });
   app.setErrorHandler((error, request, reply) => {
@@ -32,10 +34,24 @@ export function buildApp(
     request.log.error(error);
     return reply.code(500).send({ error: 'internal server error' });
   });
-  catalogRoutes(app, db);
-  inventoryRoutes(app, db);
-  productionRoutes(app, db);
-  orderRoutes(app, db);
-  operationsRoutes(app, db, settings.businessName, settings.currency);
+  function routes(instance: FastifyInstance) {
+    catalogRoutes(instance, db);
+    inventoryRoutes(instance, db);
+    productionRoutes(instance, db);
+    orderRoutes(instance, db);
+    operationsRoutes(instance, db, settings.businessName, settings.currency);
+  }
+  // Keep existing endpoint URLs for CLI/API clients; the browser uses /api.
+  routes(app);
+  app.register(
+    async (api) => {
+      routes(api);
+    },
+    { prefix: '/api' },
+  );
+  if (frontendRoot)
+    app.register(async (site) => {
+      await frontend(site, frontendRoot);
+    });
   return app;
 }

@@ -1,4 +1,5 @@
 import { config } from './config.js';
+import { fileURLToPath } from 'node:url';
 import { Database } from './database.js';
 import { buildApp } from './http/app.js';
 
@@ -8,6 +9,7 @@ const app = buildApp(
   db,
   { businessName: settings.BUSINESS_NAME, currency: settings.CURRENCY },
   true,
+  fileURLToPath(new URL('../public/', import.meta.url)),
 );
 app.addHook('onClose', () => db.close());
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {

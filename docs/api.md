@@ -1,6 +1,8 @@
 # HTTP API
 
 Base URL: `http://127.0.0.1:3000`. Requests and responses are JSON. IDs are UUIDs.
+The web interface is served at `/`. Every endpoint below is also available under `/api`
+(for example, `/api/products`), which is the prefix used by the frontend.
 Request property names use camelCase; persisted record responses use snake_case.
 Dates are ISO 8601 timestamps with an offset. Quantities and monetary values must be
 whole numbers. Unknown request fields are rejected.

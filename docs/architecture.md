@@ -2,6 +2,7 @@
 
 ```mermaid
 flowchart TD
+    WEB[React frontend] --> API
     API[Fastify routes and Zod validation] --> TX[Database transaction boundary]
     CLI[CLI and demo] --> TX
     JOB[Worker] --> TX
@@ -93,3 +94,21 @@ attempts. If publication succeeds but the process crashes before commit, the eve
 published again with the same ID. The supplied publisher writes JSON to stdout. A real
 integration must deduplicate and provide bounded network timeouts. Delivery currently
 holds the coarse transaction lock, so slow publishers delay other operations.
+
+## Frontend boundary
+
+`web/src/App.tsx` owns navigation and workspace state. Pages are separated under
+`web/src/pages/`. `api.ts` is the same-origin `/api` client, and `hooks.ts` loads the
+workspace snapshot and detail resources with cancellation of obsolete requests.
+`operations.ts` defines operational form fields and API payloads; `OperationForm.tsx`
+renders them and preserves request identifiers across retries. `Details.tsx` presents
+lot lineage, movements, order allocations and fulfillment actions.
+
+Vite compiles the frontend into `public/`. Fastify serves those files at `/`, while
+retaining the original API paths and registering the same routes under `/api`. Hash
+navigation keeps frontend URLs independent of the existing API resource paths. Docker
+copies `public/` into the runtime image. The browser does not connect to PostgreSQL or
+compute authoritative stock balances; all mutations pass through existing domain services.
+
+The frontend is single-business and has no authentication, account selector or membership
+model. Those remain part of a future migration.

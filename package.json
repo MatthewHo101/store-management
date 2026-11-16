@@ -5,36 +5,52 @@
   "type": "module",
   "description": "Single-business coffee operations from bean procurement to customer fulfillment",
   "engines": {
-    "node": ">=22"
+    "node": ">=22.12"
   },
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc -p tsconfig.build.json",
+    "build": "npm run build:api && npm run build:web",
     "start": "node dist/server.js",
     "cli": "tsx src/cli.ts",
     "migrate": "tsx src/cli.ts migrate",
     "demo": "tsx src/cli.ts demo",
     "worker": "tsx src/worker.ts",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p web/tsconfig.json",
     "lint": "eslint .",
-    "test": "tsx --test --test-concurrency=1 tests/*.test.ts",
+    "test": "npm run test:api && npm run test:web",
     "check": "npm run typecheck && npm run lint && npm run format:check && npm test && npm run build",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "dev:web": "vite --config web/vite.config.ts",
+    "build:api": "tsc -p tsconfig.build.json",
+    "build:web": "vite build --config web/vite.config.ts",
+    "test:api": "tsx --test --test-concurrency=1 tests/*.test.ts",
+    "test:web": "vitest run --config web/vite.config.ts"
   },
   "dependencies": {
     "fastify": "^5.6.2",
+    "lucide-react": "^0.468.0",
     "pg": "^8.16.3",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
     "zod": "^4.1.12"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.12",
     "@types/node": "^22.19.1",
     "@types/pg": "^8.15.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^5.2.0",
     "eslint": "^9.39.1",
+    "jsdom": "^26.1.0",
     "prettier": "^3.6.2",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.46.4"
+    "typescript-eslint": "^8.46.4",
+    "vite": "^7.3.8",
+    "vitest": "^3.2.7"
   }
 }
